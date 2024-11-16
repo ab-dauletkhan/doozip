@@ -1,0 +1,11 @@
+app:
+  name: doozip
+  version: 1.0.0
+environment: development
+server:
+  host: localhost
+  port: 8080
+  shutdown_timeout: 5s
+  read_timeout: 5s
+  write_timeout: 10s
+  idle_timeout: 60s
