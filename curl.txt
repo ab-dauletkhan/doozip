@@ -10,5 +10,5 @@ curl -X POST http://localhost:8080/api/archive/files \
 
 curl -X POST http://localhost:8080/api/mail/file \
 -H "Content-Type: multipart/form-data" \
--F "file=@/Users/dauletkhan/Downloads/'Milestone 3-1.pdf'" \
+-F "file=@/Users/dauletkhan/Downloads/Dauletkhan_Assanov_CV.pdf" \
 -F "emails=ab.dauletkhan@gmail.com,dauletkhan.assanov@nu.edu.kz"

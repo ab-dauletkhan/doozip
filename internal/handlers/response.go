@@ -16,9 +16,12 @@ type Response struct {
 func WriteJSON(w http.ResponseWriter, status int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	if err := json.NewEncoder(w).Encode(data); err != nil {
-		http.Error(w, "failed to encode JSON", http.StatusInternalServerError)
+	resp, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		http.Error(w, "failed to marshal JSON response", http.StatusInternalServerError)
+		return
 	}
+	w.Write(resp)
 }
 
 // WriteError writes an error JSON response.
