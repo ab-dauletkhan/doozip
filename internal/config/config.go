@@ -22,38 +22,48 @@ type ServerConfig struct {
 	IdleTimeout     time.Duration `mapstructure:"idle_timeout"`
 }
 
+type SMTP struct {
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+}
+
 type Config struct {
 	App    AppConfig    `mapstructure:"app"`
 	Env    string       `mapstructure:"environment"`
 	Server ServerConfig `mapstructure:"server"`
+	SMTP   SMTP         `mapstructure:"smtp"`
 }
 
-// LoadConfig loads and validates configuration from file and environment
+// LoadConfig initializes, validates, and returns the application configuration
 func LoadConfig() (*Config, error) {
-	// Initialize viper with defaults
+	// Initialize and set defaults
 	if err := initializeViper(); err != nil {
-		return nil, fmt.Errorf("failed to initialize config: %w", err)
+		return nil, fmt.Errorf("failed to initialize viper: %w", err)
 	}
 
+	// Unmarshal configuration
 	var config Config
 	if err := viper.Unmarshal(&config); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
+	// Validate configuration
 	if err := validateConfig(&config); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("config validation error: %w", err)
 	}
 
 	return &config, nil
 }
 
 func initializeViper() error {
-	// Set up viper to read from both config file and environment variables
+	// Set up viper to read from both config files and environment variables
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./config/")
 
-	// Enable viper to read environment variables
+	// Environment variable handling
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
@@ -62,31 +72,35 @@ func initializeViper() error {
 
 	// Read configuration file
 	if err := viper.ReadInConfig(); err != nil {
-		return fmt.Errorf("failed to read config file: %w", err)
+		return fmt.Errorf("error reading config file: %w", err)
+	}
+
+	// Override SMTP credentials from environment if available
+	if username, password := viper.GetString("SMTP_USERNAME"), viper.GetString("SMTP_PASSWORD"); username != "" && password != "" {
+		viper.Set("smtp.username", username)
+		viper.Set("smtp.password", password)
 	}
 
 	return nil
 }
 
 func setDefaults() {
-	// App defaults
 	viper.SetDefault("app.name", "doozip")
 	viper.SetDefault("app.version", "1.0.0")
-
-	// Environment default
 	viper.SetDefault("environment", "development")
 
-	// Server defaults
 	viper.SetDefault("server.host", "localhost")
 	viper.SetDefault("server.port", 8080)
 	viper.SetDefault("server.shutdown_timeout", "5s")
 	viper.SetDefault("server.read_timeout", "5s")
 	viper.SetDefault("server.write_timeout", "10s")
 	viper.SetDefault("server.idle_timeout", "60s")
+
+	viper.SetDefault("smtp.host", "smtp.example.com")
+	viper.SetDefault("smtp.port", "587")
 }
 
 func validateConfig(config *Config) error {
-	// Basic validation
 	if config.App.Name == "" {
 		return fmt.Errorf("app name is required")
 	}
@@ -99,30 +113,19 @@ func validateConfig(config *Config) error {
 	if !isValidEnvironment(config.Env) {
 		return fmt.Errorf("invalid environment: %s", config.Env)
 	}
-
-	// Validate timeouts are positive
-	if config.Server.ShutdownTimeout <= 0 {
-		return fmt.Errorf("shutdown timeout must be positive")
+	if config.Server.ShutdownTimeout <= 0 || config.Server.ReadTimeout <= 0 || config.Server.WriteTimeout <= 0 || config.Server.IdleTimeout <= 0 {
+		return fmt.Errorf("all server timeouts must be positive")
 	}
-	if config.Server.ReadTimeout <= 0 {
-		return fmt.Errorf("read timeout must be positive")
-	}
-	if config.Server.WriteTimeout <= 0 {
-		return fmt.Errorf("write timeout must be positive")
-	}
-	if config.Server.IdleTimeout <= 0 {
-		return fmt.Errorf("idle timeout must be positive")
-	}
-
 	return nil
 }
 
 func isValidEnvironment(env string) bool {
-	validEnvs := map[string]bool{
-		"development": true,
-		"production":  true,
+	validEnvs := map[string]struct{}{
+		"development": {},
+		"production":  {},
 	}
-	return validEnvs[env]
+	_, valid := validEnvs[env]
+	return valid
 }
 
 // String returns a string representation of the config for debugging
@@ -138,6 +141,8 @@ func (c *Config) String() string {
 	Read Timeout:          %s
 	Write Timeout:         %s
 	Idling Timeout:        %s
+	SMTP Host:             %s
+	SMTP Port:             %s
 	`,
 		c.App.Name,
 		c.App.Version,
@@ -148,6 +153,8 @@ func (c *Config) String() string {
 		c.Server.ReadTimeout,
 		c.Server.WriteTimeout,
 		c.Server.IdleTimeout,
+		c.SMTP.Host,
+		c.SMTP.Port,
 	)
 }
 

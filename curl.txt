@@ -1,0 +1,14 @@
+curl -X POST http://localhost:8080/api/archive/information \
+-H "Content-Type: multipart/form-data" \
+-F "file=@/Users/dauletkhan/Downloads/base.zip"
+
+curl -X POST http://localhost:8080/api/archive/files \
+-H "Content-Type: multipart/form-data" \
+-F "files[]=@/Users/dauletkhan/Downloads/doc.docx" \
+-F "files[]=@/Users/dauletkhan/Downloads/i.jpg" \
+-o output.zip
+
+curl -X POST http://localhost:8080/api/mail/file \
+-H "Content-Type: multipart/form-data" \
+-F "file=@/Users/dauletkhan/Downloads/'Milestone 3-1.pdf'" \
+-F "emails=ab.dauletkhan@gmail.com,dauletkhan.assanov@nu.edu.kz"

@@ -9,3 +9,6 @@ server:
   read_timeout: 5s
   write_timeout: 10s
   idle_timeout: 60s
+SMTP:
+  host: smtp.gmail.com
+  port: 587
