@@ -10,8 +10,8 @@ import (
 	"regexp"
 	"strings"
 
-	"doozip/internal/config"
-	"doozip/internal/entities"
+	"github.com/ab-dauletkhan/doozip/internal/config"
+	"github.com/ab-dauletkhan/doozip/internal/entities"
 )
 
 var (

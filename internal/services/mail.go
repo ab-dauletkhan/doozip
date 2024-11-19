@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"doozip/internal/entities"
-	"doozip/internal/repositories"
+	"github.com/ab-dauletkhan/doozip/internal/entities"
+	"github.com/ab-dauletkhan/doozip/internal/repositories"
 )
 
 var (

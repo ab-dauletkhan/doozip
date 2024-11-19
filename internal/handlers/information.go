@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"doozip/internal/entities"
-	"doozip/internal/services"
+	"github.com/ab-dauletkhan/doozip/internal/entities"
+	"github.com/ab-dauletkhan/doozip/internal/services"
 )
 
 const (

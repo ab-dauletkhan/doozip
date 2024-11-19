@@ -1,4 +1,4 @@
-module doozip
+module github.com/ab-dauletkhan/doozip
 
 go 1.23.2
 

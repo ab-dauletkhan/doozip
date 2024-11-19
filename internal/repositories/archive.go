@@ -11,7 +11,7 @@ import (
 	"mime/multipart"
 	"path/filepath"
 
-	"doozip/internal/entities"
+	"github.com/ab-dauletkhan/doozip/internal/entities"
 )
 
 var (

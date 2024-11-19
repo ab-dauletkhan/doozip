@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"doozip/internal/services"
+	"github.com/ab-dauletkhan/doozip/internal/services"
 )
 
 // MailHandler handles mail-related operations.

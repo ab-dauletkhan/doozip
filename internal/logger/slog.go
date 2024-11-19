@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"doozip/internal/utils"
+	"github.com/ab-dauletkhan/doozip/internal/utils"
 )
 
 const (
