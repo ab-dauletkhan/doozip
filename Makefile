@@ -4,5 +4,5 @@ run:
 	gofumpt -l -w .
 	go run .
 build:
-	gofumpt -l -w .
-	go build -o doozip .
+	go mod tidy
+	go build -tags netgo -ldflags '-s -w' -o app ./cmd/doozip
